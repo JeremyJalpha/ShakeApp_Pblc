@@ -1,0 +1,69 @@
+﻿@page "/payment/cancel"
+@model CommandBot.Pages.Payment.CancelModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Cancelled</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: #dc3545;
+            color: white;
+            margin: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 1.2em;
+            margin: 15px 0;
+        }
+        .actions {
+            margin-top: 30px;
+        }
+        a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            display: inline-block;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+        a:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>❌ Payment Cancelled</h1>
+        <p>Your payment was cancelled or could not be completed.</p>
+        
+        @if (!string.IsNullOrEmpty(Model.SaleId))
+        {
+            <p class="detail">Order ID: @Model.SaleId</p>
+        }
+        
+        <div class="actions">
+            <p>You may return to WhatsApp to continue shopping.</p>
+        </div>
+    </div>
+</body>
+</html>

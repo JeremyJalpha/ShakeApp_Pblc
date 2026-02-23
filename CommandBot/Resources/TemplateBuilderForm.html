@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatsApp Template Builder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #25D366;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+            border-bottom: 2px solid #25D366;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #888;
+            font-weight: normal;
+            margin-left: 5px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #25D366;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .char-counter {
+            text-align: right;
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+
+        .char-counter.warning {
+            color: #ff9800;
+        }
+
+        .char-counter.error {
+            color: #f44336;
+        }
+
+        .buttons-section {
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .button-item {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #25D366;
+        }
+
+        .button-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .button-number {
+            font-weight: 600;
+            color: #25D366;
+        }
+
+        .remove-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .remove-btn:hover {
+            background: #d32f2f;
+        }
+
+        .button-fields {
+            display: grid;
+            gap: 10px;
+        }
+
+        .add-button {
+            width: 100%;
+            padding: 12px;
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .add-button:hover {
+            background: #1fb855;
+        }
+
+        .add-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .preview-phone {
+            background: #e5ddd5;
+            border-radius: 16px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .message-bubble {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .message-header {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .message-body {
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 8px;
+            white-space: pre-wrap;
+        }
+
+        .message-footer {
+            color: #888;
+            font-size: 12px;
+            font-style: italic;
+        }
+
+        .preview-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .preview-button {
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .preview-button.quick-reply {
+            background: #e3f2fd;
+            color: #1976d2;
+            border: 2px solid #1976d2;
+        }
+
+        .preview-button.url {
+            background: #e8f5e9;
+            color: #388e3c;
+            border: 2px solid #388e3c;
+        }
+
+        .preview-button.phone {
+            background: #fff3e0;
+            color: #f57c00;
+            border: 2px solid #f57c00;
+        }
+
+        .preview-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .output-section {
+            background: #263238;
+            color: #aed581;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .copy-btn {
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .copy-btn:hover {
+            background: #1fb855;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 14px;
+            border-left: 4px solid #c62828;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 14px;
+            border-left: 4px solid #2e7d32;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Form Panel -->
+        <div class="panel">
+            <h1>📱 WhatsApp Template Builder</h1>
+            <p style="color: #666; margin-bottom: 20px;">Create broadcast message templates with interactive buttons</p>
+
+            <form id="templateForm">
+                <h2>Basic Information</h2>
+                
+                <div class="form-group">
+                    <label>Template Name <span class="hint">(lowercase, alphanumeric, underscores)</span></label>
+                    <input type="text" id="templateName" placeholder="e.g., order_confirmation" required>
+                    <div class="char-counter" id="nameCounter">0 / 512</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="category" required>
+                        <option value="">Select category...</option>
+                        <option value="marketing">Marketing (Promotions, offers)</option>
+                        <option value="utility">Utility (Order updates, reminders)</option>
+                        <option value="authentication">Authentication (OTP, verification)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Language</label>
+                    <select id="language" required>
+                        <option value="en">English (en)</option>
+                        <option value="en_US">English US (en_US)</option>
+                        <option value="en_GB">English UK (en_GB)</option>
+                        <option value="af">Afrikaans (af)</option>
+                        <option value="zu">Zulu (zu)</option>
+                        <option value="xh">Xhosa (xh)</option>
+                        <option value="es">Spanish (es)</option>
+                        <option value="fr">French (fr)</option>
+                        <option value="de">German (de)</option>
+                        <option value="pt">Portuguese (pt)</option>
+                        <option value="ar">Arabic (ar)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Campaign Image ID <span class="hint">(optional)</span></label>
+                    <input type="number" id="imageId" placeholder="e.g., 15">
+                </div>
+
+                <h2>Message Content</h2>
+
+                <div class="form-group">
+                    <label>Header <span class="hint">(optional, max 60 chars)</span></label>
+                    <input type="text" id="header" placeholder="e.g., Order Confirmed! 🎉">
+                    <div class="char-counter" id="headerCounter">0 / 60</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Body <span class="hint">(required, max 1024 chars)</span></label>
+                    <textarea id="body" placeholder="Your order #{{1}} has been confirmed and will arrive by {{2}}. Use {{1}}, {{2}} for variables." required></textarea>
+                    <div class="char-counter" id="bodyCounter">0 / 1024</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Footer <span class="hint">(optional, max 60 chars)</span></label>
+                    <input type="text" id="footer" placeholder="e.g., Thank you for your business!">
+                    <div class="char-counter" id="footerCounter">0 / 60</div>
+                </div>
+
+                <h2>Buttons (Max 3)</h2>
+                
+                <div class="buttons-section" id="buttonsContainer">
+                    <!-- Buttons will be added here dynamically -->
+                </div>
+
+                <button type="button" class="add-button" id="addButton">+ Add Button</button>
+
+                <button type="submit" class="generate-btn">Generate Template Command</button>
+            </form>
+
+            <div id="messageArea"></div>
+
+            <div class="output-section" id="output" style="display: none;"></div>
+            <button class="copy-btn" id="copyBtn" style="display: none;">Copy to Clipboard</button>
+        </div>
+
+        <!-- Preview Panel -->
+        <div class="panel">
+            <h2>📱 Live Preview</h2>
+            <div class="preview-phone">
+                <div class="message-bubble">
+                    <div class="message-header" id="previewHeader">Header text will appear here</div>
+                    <div class="message-body" id="previewBody">Body text will appear here. Use {{1}}, {{2}} for variables that will be replaced when sending.</div>
+                    <div class="message-footer" id="previewFooter">Footer text</div>
+                    <div class="preview-buttons" id="previewButtons">
+                        <!-- Preview buttons will appear here -->
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: #f5f5f5; border-radius: 8px;">
+                <h3 style="font-size: 14px; color: #666; margin-bottom: 10px;">💡 Tips:</h3>
+                <ul style="font-size: 13px; color: #666; padding-left: 20px; line-height: 1.8;">
+                    <li>Template names must be lowercase with underscores</li>
+                    <li>Use {{1}}, {{2}} for dynamic variables in body text</li>
+                    <li>Button text limited to 20 characters</li>
+                    <li>URLs must use HTTPS protocol</li>
+                    <li>Phone numbers must include country code</li>
+                    <li>Templates must be approved by WhatsApp before use</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let buttonCount = 0;
+        const maxButtons = 3;
+
+        // Character counters
+        function setupCharCounter(inputId, counterId, maxLength) {
+            const input = document.getElementById(inputId);
+            const counter = document.getElementById(counterId);
+            
+            input.addEventListener('input', () => {
+                const length = input.value.length;
+                counter.textContent = `${length} / ${maxLength}`;
+                
+                if (length > maxLength * 0.9) {
+                    counter.classList.add('warning');
+                } else {
+                    counter.classList.remove('warning');
+                }
+                
+                if (length > maxLength) {
+                    counter.classList.add('error');
+                } else {
+                    counter.classList.remove('error');
+                }
+                
+                updatePreview();
+            });
+        }
+
+        setupCharCounter('templateName', 'nameCounter', 512);
+        setupCharCounter('header', 'headerCounter', 60);
+        setupCharCounter('body', 'bodyCounter', 1024);
+        setupCharCounter('footer', 'footerCounter', 60);
+
+        // Add button functionality
+        document.getElementById('addButton').addEventListener('click', () => {
+            if (buttonCount >= maxButtons) {
+                showMessage('Maximum 3 buttons allowed', 'error');
+                return;
+            }
+
+            buttonCount++;
+            const buttonItem = document.createElement('div');
+            buttonItem.className = 'button-item';
+            buttonItem.id = `button-${buttonCount}`;
+            
+            buttonItem.innerHTML = `
+                <div class="button-header">
+                    <span class="button-number">Button ${buttonCount}</span>
+                    <button type="button" class="remove-btn" onclick="removeButton(${buttonCount})">Remove</button>
+                </div>
+                <div class="button-fields">
+                    <div>
+                        <label>Button Type</label>
+                        <select class="button-type" data-button="${buttonCount}" required>
+                            <option value="">Select type...</option>
+                            <option value="QUICK_REPLY">Quick Reply (sends text)</option>
+                            <option value="URL">URL (opens link)</option>
+                            <option value="PHONE_NUMBER">Phone Number (calls)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Button Text <span class="hint">(max 20 chars)</span></label>
+                        <input type="text" class="button-text" data-button="${buttonCount}" placeholder="e.g., Confirm Order" maxlength="20" required>
+                    </div>
+                    <div>
+                        <label>Value/Payload</label>
+                        <input type="text" class="button-value" data-button="${buttonCount}" placeholder="e.g., CONFIRM or https://example.com or +27123456789" required>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('buttonsContainer').appendChild(buttonItem);
+            
+            // Add event listeners for preview
+            buttonItem.querySelectorAll('select, input').forEach(el => {
+                el.addEventListener('input', updatePreview);
+            });
+
+            updateAddButtonState();
+            updatePreview();
+        });
+
+        function removeButton(id) {
+            const button = document.getElementById(`button-${id}`);
+            if (button) {
+                button.remove();
+                buttonCount--;
+                updateAddButtonState();
+                updatePreview();
+            }
+        }
+
+        function updateAddButtonState() {
+            const addBtn = document.getElementById('addButton');
+            addBtn.disabled = buttonCount >= maxButtons;
+        }
+
+        // Update preview
+        function updatePreview() {
+            const header = document.getElementById('header').value || 'Header text will appear here';
+            const body = document.getElementById('body').value || 'Body text will appear here. Use {{1}}, {{2}} for variables.';
+            const footer = document.getElementById('footer').value || 'Footer text';
+
+            document.getElementById('previewHeader').textContent = header;
+            document.getElementById('previewBody').textContent = body;
+            document.getElementById('previewFooter').textContent = footer;
+
+            // Update preview buttons
+            const previewButtons = document.getElementById('previewButtons');
+            previewButtons.innerHTML = '';
+
+            document.querySelectorAll('.button-item').forEach((item) => {
+                const type = item.querySelector('.button-type').value;
+                const text = item.querySelector('.button-text').value;
+
+                if (type && text) {
+                    const btn = document.createElement('div');
+                    btn.className = `preview-button ${type.toLowerCase().replace('_', '-')}`;
+                    
+                    let icon = '';
+                    if (type === 'QUICK_REPLY') icon = '↩️';
+                    if (type === 'URL') icon = '🔗';
+                    if (type === 'PHONE_NUMBER') icon = '📞';
+                    
+                    btn.textContent = `${icon} ${text}`;
+                    previewButtons.appendChild(btn);
+                }
+            });
+        }
+
+        // Form submission
+        document.getElementById('templateForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            try {
+                const name = document.getElementById('templateName').value.trim();
+                const category = document.getElementById('category').value;
+                const language = document.getElementById('language').value;
+                const imageId = document.getElementById('imageId').value.trim();
+                const header = document.getElementById('header').value.trim();
+                const body = document.getElementById('body').value.trim();
+                const footer = document.getElementById('footer').value.trim();
+
+                // Validate template name
+                if (!/^[a-z0-9_]+$/.test(name)) {
+                    throw new Error('Template name must be lowercase with only letters, numbers, and underscores');
+                }
+
+                if (name.length === 0 || name.length > 512) {
+                    throw new Error('Template name must be between 1 and 512 characters');
+                }
+
+                if (!body) {
+                    throw new Error('Body text is required');
+                }
+
+                // Build command
+                let command = `#broadcast template: ${name}, ${category}, ${language}`;
+
+                if (imageId) {
+                    command += `, image:${imageId}`;
+                }
+
+                if (header) {
+                    command += `, ${header}`;
+                }
+
+                command += `, ${body}`;
+
+                if (footer) {
+                    command += `, ${footer}`;
+                }
+
+                // Add buttons
+                document.querySelectorAll('.button-item').forEach((item) => {
+                    const type = item.querySelector('.button-type').value;
+                    const text = item.querySelector('.button-text').value.trim();
+                    const value = item.querySelector('.button-value').value.trim();
+
+                    if (type && text && value) {
+                        // Validate button text length
+                        if (text.length > 20) {
+                            throw new Error(`Button text "${text}" exceeds 20 characters`);
+                        }
+
+                        // Validate URL
+                        if (type === 'URL' && !value.startsWith('https://')) {
+                            throw new Error(`URL must start with https:// - got: ${value}`);
+                        }
+
+                        // Validate phone number
+                        if (type === 'PHONE_NUMBER' && !value.startsWith('+')) {
+                            throw new Error(`Phone number must include country code (start with +) - got: ${value}`);
+                        }
+
+                        command += `, button: ${type}|${text}|${value}`;
+                    }
+                });
+
+                // Display output
+                const output = document.getElementById('output');
+                output.textContent = command;
+                output.style.display = 'block';
+
+                document.getElementById('copyBtn').style.display = 'block';
+
+                showMessage('✅ Template command generated successfully!', 'success');
+
+            } catch (error) {
+                showMessage(`❌ Error: ${error.message}`, 'error');
+            }
+        });
+
+        // Copy to clipboard
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            const output = document.getElementById('output').textContent;
+            navigator.clipboard.writeText(output).then(() => {
+                showMessage('✅ Copied to clipboard!', 'success');
+            });
+        });
+
+        function showMessage(message, type) {
+            const messageArea = document.getElementById('messageArea');
+            const div = document.createElement('div');
+            div.className = type === 'error' ? 'error-message' : 'success-message';
+            div.textContent = message;
+            messageArea.innerHTML = '';
+            messageArea.appendChild(div);
+
+            setTimeout(() => {
+                div.remove();
+            }, 5000);
+        }
+
+        // Initialize preview
+        updatePreview();
+
+        // Update preview on any form input change
+        document.getElementById('templateForm').querySelectorAll('input, select, textarea').forEach(el => {
+            el.addEventListener('input', updatePreview);
+        });
+    </script>
+</body>
+</html>

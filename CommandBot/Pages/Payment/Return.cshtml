@@ -1,0 +1,74 @@
+﻿@page "/payment/return"
+@model CommandBot.Pages.Payment.ReturnModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Complete</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: #28a745;
+            color: white;
+            margin: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        .detail {
+            margin: 15px 0;
+            font-size: 1.1em;
+        }
+        .label {
+            font-weight: bold;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ Payment Processing Complete</h1>
+        <p>Processing your order...</p>
+        
+        <div class="detail">
+            <span class="label">Order ID:</span> @Model.SaleId
+        </div>
+        
+        @if (!string.IsNullOrEmpty(Model.PaymentStatus))
+        {
+            <div class="detail">
+                <span class="label">Status:</span> @Model.PaymentStatus
+            </div>
+        }
+        
+        @if (!string.IsNullOrEmpty(Model.PfPaymentId))
+        {
+            <div class="detail">
+                <span class="label">Transaction ID:</span> @Model.PfPaymentId
+            </div>
+        }
+        
+        <div class="footer">
+            <p>You may return to WhatsApp to continue.</p>
+        </div>
+    </div>
+</body>
+</html>

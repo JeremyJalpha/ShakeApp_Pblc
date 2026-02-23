@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantelis Italian Kitchen - Order Menu</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      h1 {
+        text-align: center;
+        color: #c41e3a;
+      }
+      h2 {
+        color: #2c5f2d;
+        border-bottom: 2px solid #2c5f2d;
+        padding-bottom: 10px;
+        margin-top: 30px;
+      }
+      .menu-item-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 15px;
+      }
+      .menu-item {
+        width: calc(33.333% - 10px);
+        margin-bottom: 1em;
+        text-align: center;
+        padding: 1em;
+        border: 1px solid lightgray;
+        border-radius: 5px;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        position: relative;
+      }
+      .menu-item h3 {
+        margin-bottom: 0.5em;
+        color: #c41e3a;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: center;
+      }
+      .menu-item p {
+        margin-bottom: 0.5em;
+        font-size: 0.9em;
+      }
+      .menu-item .description {
+        color: #666;
+        min-height: 40px;
+      }
+      .menu-item .price {
+        font-weight: bold;
+        color: #2c5f2d;
+        font-size: 1.1em;
+      }
+      .menu-item button {
+        background-color: #c41e3a;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9em;
+      }
+      .menu-item button:hover {
+        background-color: #a01828;
+      }
+      .item-code {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background-color: #2c5f2d;
+        color: white;
+        padding: 3px 8px;
+        border-radius: 3px;
+        font-size: 0.7em;
+        font-family: monospace;
+        font-weight: bold;
+      }
+      .badge {
+        display: inline-block;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.75em;
+        font-weight: 700;
+        color: #fff;
+      }
+      .badge.pasta {
+        background-color: #2c5f2d;
+      }
+      #extras-section {
+        display: none;
+        padding: 1.5em;
+        border: 2px solid #c41e3a;
+        border-radius: 5px;
+        margin-top: 2em;
+        background-color: white;
+      }
+      #extras-section.active {
+        display: block;
+      }
+      #extras-section h3 {
+        color: #c41e3a;
+        margin-top: 0;
+      }
+      #extras-section h4 {
+        color: #2c5f2d;
+        margin-top: 1.5em;
+        margin-bottom: 1em;
+        font-size: 1.1em;
+        border-bottom: 2px solid #2c5f2d;
+        padding-bottom: 5px;
+      }
+      .extras-category {
+        margin-bottom: 20px;
+      }
+      .extras-category h5 {
+        color: #2c5f2d;
+        margin-bottom: 10px;
+        font-size: 1em;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 5px;
+      }
+      .extras-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+      }
+      .extra-item {
+        display: flex;
+        align-items: center;
+        padding: 5px;
+      }
+      .extra-item label {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        width: 100%;
+      }
+      .extra-item input[type="checkbox"] {
+        margin-right: 8px;
+        cursor: pointer;
+      }
+      .extra-item .extra-name {
+        flex: 1;
+      }
+      .extra-item .extra-code {
+        margin-right: 8px;
+        background-color: #666;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 0.7em;
+        font-family: monospace;
+      }
+      .extra-item .extra-price {
+        margin-left: auto;
+        color: #2c5f2d;
+        font-weight: bold;
+        font-size: 0.9em;
+      }
+      .swap-section {
+        margin-top: 1.5em;
+      }
+      .swap-item {
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        margin-bottom: 8px;
+        background-color: #f9f9f9;
+        border-radius: 4px;
+      }
+      .swap-item .original-topping {
+        flex: 1;
+        font-weight: bold;
+        color: #c41e3a;
+      }
+      .swap-item .swap-arrow {
+        margin: 0 10px;
+        color: #666;
+      }
+      .swap-item select {
+        flex: 2;
+        padding: 5px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      #summary {
+        padding: 1.5em;
+        border: 2px solid #2c5f2d;
+        border-radius: 5px;
+        margin-top: 2em;
+        background-color: white;
+        position: sticky;
+        top: 20px;
+      }
+      #summary h3 {
+        color: #2c5f2d;
+        margin-top: 0;
+      }
+      #summary-list {
+        list-style-type: none;
+        padding-left: 0;
+      }
+      #summary-list li {
+        padding: 8px;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      #summary-list li:hover {
+        background-color: #f9f9f9;
+      }
+      #summary-list li.selected {
+        background-color: #ffe6e6;
+        border-left: 3px solid #c41e3a;
+      }
+      #summary-list li .item-extras {
+        font-size: 0.85em;
+        color: #666;
+        margin-top: 5px;
+        font-style: italic;
+      }
+      #summary-list li .item-code-display {
+        font-family: monospace;
+        color: #2c5f2d;
+        font-weight: bold;
+        font-size: 0.85em;
+      }
+      .remove-btn {
+        margin-left: 10px;
+        background-color: #c41e3a;
+        color: white;
+        border: none;
+        padding: 2px 8px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 0.8em;
+      }
+      .remove-btn:hover {
+        background-color: #a01828;
+      }
+      #whatsapp-btn {
+        margin-top: 1em;
+        padding: 12px 24px;
+        background-color: #25D366;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        width: 100%;
+      }
+      #whatsapp-btn:hover {
+        background-color: #1ebe5d;
+      }
+      .note {
+        font-style: italic;
+        color: #666;
+        font-size: 0.85em;
+        margin-top: 10px;
+      }
+      .contact-info {
+        text-align: center;
+        margin: 20px 0;
+        padding: 15px;
+        background-color: white;
+        border-radius: 5px;
+      }
+      .contact-info h3 {
+        color: #c41e3a;
+        margin-top: 0;
+      }
+      #selected-item-name {
+        color: #c41e3a;
+        font-weight: bold;
+        font-size: 1.1em;
+      }
+      .extras-actions {
+        margin-top: 15px;
+        display: flex;
+        gap: 10px;
+      }
+      .extras-actions button {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.95em;
+      }
+      .save-extras-btn {
+        background-color: #2c5f2d;
+        color: white;
+      }
+      .save-extras-btn:hover {
+        background-color: #1e4220;
+      }
+      .cancel-extras-btn {
+        background-color: #999;
+        color: white;
+      }
+      .cancel-extras-btn:hover {
+        background-color: #777;
+      }
+      @media (max-width: 768px) {
+        .menu-item {
+          width: calc(50% - 10px);
+        }
+        .extras-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 480px) {
+        .menu-item {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🍕 Pantelis Italian Kitchen 🍕</h1>
+    
+    <div class="contact-info">
+      <h3>WE DELIVER</h3>
+      <p><strong>📞 021 002 8428</strong></p>
+      <p>Sandown Retail Crossing, Cnr Wood Drive and Sandown Road, Bloubergstrand</p>
+      <p>@pantelisItaliankitchencpt | @Pantelis Italian Kitchen Blouberg</p>
+    </div>
+
+    <!-- STARTERS -->
+    <h2>🥖 STARTERS</h2>
+    <div class="menu-item-container">
+      <div class="menu-item">
+        <span class="item-code">M_001</span>
+        <h3>FOCCACIA</h3>
+        <p class="description">Sesame seed & garlic</p>
+        <p class="price">R85</p>
+        <button onclick="appendToSummary('M_001', 'Foccacia (Sesame & Garlic)', 85, [])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_002</span>
+        <h3>FOCCACIA</h3>
+        <p class="description">Garlic & mozzarella</p>
+        <p class="price">R89</p>
+        <button onclick="appendToSummary('M_002', 'Foccacia (Garlic & Mozzarella)', 89, ['E_029'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_003</span>
+        <h3>FOCCACIA</h3>
+        <p class="description">Bacon, feta & garlic</p>
+        <p class="price">R89</p>
+        <button onclick="appendToSummary('M_003', 'Foccacia (Bacon, Feta & Garlic)', 89, ['E_005', 'E_030'])">Add to Order</button>
+      </div>
+    </div>
+
+    <h2>🍕 TRADITIONAL PIZZAS (LRG)</h2>
+    <div class="menu-item-container">
+      <div class="menu-item">
+        <span class="item-code">M_004</span>
+        <h3>MARGARITA</h3>
+        <p class="description">Tomato base & mozzarella cheese</p>
+        <p class="price">R109</p>
+        <button onclick="appendToSummary('M_004', 'Margarita', 109, ['E_029'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_005</span>
+        <h3>HAWAIIAN</h3>
+        <p class="description">Ham & pineapple</p>
+        <p class="price">R135</p>
+        <button onclick="appendToSummary('M_005', 'Hawaiian', 135, ['E_006', 'E_026'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_006</span>
+        <h3>REGINA</h3>
+        <p class="description">Ham & mushroom</p>
+        <p class="price">R135</p>
+        <button onclick="appendToSummary('M_006', 'Regina', 135, ['E_006', 'E_010'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_007</span>
+        <h3>VEGETARIAN</h3>
+        <p class="description">Olives, mixed peppers, onions & mushrooms</p>
+        <p class="price">R149</p>
+        <button onclick="appendToSummary('M_007', 'Vegetarian', 149, ['E_014', 'E_011', 'E_013', 'E_010'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_008</span>
+        <h3>QUATTRO STAGIONE</h3>
+        <p class="description">Ham, mushroom, artichokes & olives</p>
+        <p class="price">R159</p>
+        <button onclick="appendToSummary('M_008', 'Quattro Stagione', 159, ['E_006', 'E_010', 'E_016', 'E_014'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_009</span>
+        <h3>SICILIANO</h3>
+        <p class="description">Anchovies, capers & olives</p>
+        <p class="price">R160</p>
+        <button onclick="appendToSummary('M_009', 'Siciliano', 160, ['E_009', 'E_022', 'E_014'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_010</span>
+        <h3>MEXICANA</h3>
+        <p class="description">Marinated mince, mixed peppers, onions, chilli & mushrooms</p>
+        <p class="price">R160</p>
+        <button onclick="appendToSummary('M_010', 'Mexicana', 160, ['E_008', 'E_011', 'E_013', 'E_020', 'E_010'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_011</span>
+        <h3>BBQ CHICKEN</h3>
+        <p class="description">Chicken with BBQ sauce</p>
+        <p class="price">R135</p>
+        <button onclick="appendToSummary('M_011', 'BBQ Chicken', 135, ['E_004', 'E_023'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_012</span>
+        <h3>OCCAPUTO</h3>
+        <p class="description">Bacon and banana</p>
+        <p class="price">R135</p>
+        <button onclick="appendToSummary('M_012', 'Occaputo', 135, ['E_005', 'E_027'])">Add to Order</button>
+      </div>
+    </div>
+
+    <h2>🌟 ADVENTUROUS PIZZAS (LRG)</h2>
+    <div class="menu-item-container">
+      <div class="menu-item">
+        <span class="item-code">M_013</span>
+        <h3>BUON GIORNO</h3>
+        <p class="description">Salami, bacon, mushrooms & mixed peppers</p>
+        <p class="price">R165</p>
+        <button onclick="appendToSummary('M_013', 'Buon Giorno', 165, ['E_007', 'E_005', 'E_010', 'E_011'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_014</span>
+        <h3>CYPRUS</h3>
+        <p class="description">Halloumi, cherry tomatoes, fresh rocket & avo*</p>
+        <p class="price">R165</p>
+        <button onclick="appendToSummary('M_014', 'Cyprus', 165, ['E_031', 'E_015', 'E_017', 'E_018'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_015</span>
+        <h3>LEONI</h3>
+        <p class="description">Basil pesto basting, halloumi, peppadews & bacon</p>
+        <p class="price">R169</p>
+        <button onclick="appendToSummary('M_015', 'Leoni', 169, ['E_025', 'E_031', 'E_019', 'E_005'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_016</span>
+        <h3>THE BRONX</h3>
+        <p class="description">Jalapeno's, feta, peppadews, chicken & avo*</p>
+        <p class="price">R175</p>
+        <button onclick="appendToSummary('M_016', 'The Bronx', 175, ['E_021', 'E_030', 'E_019', 'E_004', 'E_018'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_017</span>
+        <h3>THE YELLOW CAB</h3>
+        <p class="description">Bacon, tender chicken strips, salami & ham</p>
+        <p class="price">R179</p>
+        <button onclick="appendToSummary('M_017', 'The Yellow Cab', 179, ['E_005', 'E_004', 'E_007', 'E_006'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_018</span>
+        <h3>AMERICANO</h3>
+        <p class="description">Pulled pork & cranberries</p>
+        <p class="price">R155</p>
+        <button onclick="appendToSummary('M_018', 'Americano', 155, ['E_001', 'E_028'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_019</span>
+        <h3>THE JON JON</h3>
+        <p class="description">Pulled pork, peppadew & onion</p>
+        <p class="price">R155</p>
+        <button onclick="appendToSummary('M_019', 'The Jon Jon', 155, ['E_001', 'E_019', 'E_013'])">Add to Order</button>
+      </div>
+    </div>
+
+    <h2>⭐ GOURMET PIZZAS (LRG)</h2>
+    <div class="menu-item-container">
+      <div class="menu-item">
+        <span class="item-code">M_020</span>
+        <h3>TUTTO BENE</h3>
+        <p class="description">Grilled marinated chicken, feta & avo*</p>
+        <p class="price">R159</p>
+        <button onclick="appendToSummary('M_020', 'Tutto Bene', 159, ['E_004', 'E_030', 'E_018'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_021</span>
+        <h3>PAPHOS</h3>
+        <p class="description">Bacon, avo* & feta</p>
+        <p class="price">R159</p>
+        <button onclick="appendToSummary('M_021', 'Paphos', 159, ['E_005', 'E_018', 'E_030'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_022</span>
+        <h3>MAFIA HIT</h3>
+        <p class="description">Salami, marinated chicken, feta, onions & mushrooms</p>
+        <p class="price">R169</p>
+        <button onclick="appendToSummary('M_022', 'Mafia Hit', 169, ['E_007', 'E_004', 'E_030', 'E_013', 'E_010'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_023</span>
+        <h3>BENFICA</h3>
+        <p class="description">Chicken, chouriço & avo*</p>
+        <p class="price">R162</p>
+        <button onclick="appendToSummary('M_023', 'Benfica', 162, ['E_004', 'E_003', 'E_018'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_024</span>
+        <h3>DON AMICI</h3>
+        <p class="description">Chicken mayo & avo*</p>
+        <p class="price">R159</p>
+        <button onclick="appendToSummary('M_024', 'Don Amici', 159, ['E_004', 'E_018'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_025</span>
+        <h3>PORTO FINO</h3>
+        <p class="description">Salami, chourico, onions & mixed peppers</p>
+        <p class="price">R159</p>
+        <button onclick="appendToSummary('M_025', 'Porto Fino', 159, ['E_007', 'E_003', 'E_013', 'E_011'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_026</span>
+        <h3>SWEET CHILLI CHICKEN</h3>
+        <p class="description">Sweet chilli chicken, feta & peppadews</p>
+        <p class="price">R159</p>
+        <button onclick="appendToSummary('M_026', 'Sweet Chilli Chicken', 159, ['E_004', 'E_024', 'E_030', 'E_019'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_027</span>
+        <h3>NADIANO</h3>
+        <p class="description">Chicken, bacon, mushrooms, pineapple, peppadews & chilli</p>
+        <p class="price">R170</p>
+        <button onclick="appendToSummary('M_027', 'Nadiano', 170, ['E_004', 'E_005', 'E_010', 'E_026', 'E_019', 'E_020'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_028</span>
+        <h3>BIG APPLE</h3>
+        <p class="description">Bacon, feta, ham, green pepper & olives</p>
+        <p class="price">R165</p>
+        <button onclick="appendToSummary('M_028', 'Big Apple', 165, ['E_005', 'E_030', 'E_006', 'E_012', 'E_014'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_029</span>
+        <h3>SCUSI</h3>
+        <p class="description">Grilled tender rump pieces, peppadews, feta & onions</p>
+        <p class="price">R189</p>
+        <button onclick="appendToSummary('M_029', 'Scusi', 189, ['E_002', 'E_019', 'E_030', 'E_013'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_030</span>
+        <h3>FIGARO</h3>
+        <p class="description">Salami, mixed pepper, onions, olives & feta</p>
+        <p class="price">R165</p>
+        <button onclick="appendToSummary('M_030', 'Figaro', 165, ['E_007', 'E_011', 'E_013', 'E_014', 'E_030'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_031</span>
+        <h3>CAPEESH</h3>
+        <p class="description">Ham, bacon, salami, avo* & balsamic cherry tomatoes</p>
+        <p class="price">R179</p>
+        <button onclick="appendToSummary('M_031', 'Capeesh', 179, ['E_006', 'E_005', 'E_007', 'E_018', 'E_015'])">Add to Order</button>
+      </div>
+      <div class="menu-item">
+        <span class="item-code">M_032</span>
+        <h3>TORONELLO</h3>
+        <p class="description">Marinated chicken, bacon, onions & chilli</p>
+        <p class="price">R159</p>
+        <button onclick="appendToSummary('M_032', 'Toronello', 159, ['E_004', 'E_005', 'E_013', 'E_020'])">Add to Order</button>
+      </div>
+    </div>
+
+    <h2>👶 KIDDIES</h2>
+    <div class="menu-item-container">
+      <div class="menu-item">
+        <span class="item-code">M_033</span>
+        <h3>KID'S PIZZA</h3>
+        <p class="description">Create your own pizza with a choice of two toppings</p>
+        <p class="price">R85</p>
+        <button onclick="appendToSummary('M_033', 'Kid\'s Pizza', 85, [])">Add to Order</button>
+      </div>
+      <div class="menu-item" data-type="pasta" aria-label="Pasta dish">
+        <span class="item-code">M_034</span>
+        <h3>KID'S ALFREDO <span class="badge pasta" title="Pasta">PASTA</span></h3>
+        <p class="description">Fresh mushrooms, ham, Italian crema sauce, topped with parmesan</p>
+        <p class="price">R79</p>
+        <button onclick="appendToSummary('M_034', 'Kid\'s Alfredo', 79, ['E_010', 'E_006', 'E_032'])">Add to Order</button>
+      </div>
+      <div class="menu-item" data-type="pasta" aria-label="Pasta dish">
+        <span class="item-code">M_035</span>
+        <h3>SPAGHETTI BOLOGNAISE <span class="badge pasta" title="Pasta">PASTA</span></h3>
+        <p class="description">Traditional secret recipe</p>
+        <p class="price">R79</p>
+        <button onclick="appendToSummary('M_035', 'Spaghetti Bolognaise', 79, [])">Add to Order</button>
+      </div>
+    </div>
+
+    <p class="note">*Avos served in season</p>
+
+    <!-- Extras Section -->
+    <div id="extras-section">
+      <h3>🍕 Customize: <span id="selected-item-name"></span></h3>
+      
+      <!-- Swap Toppings Section -->
+      <h4>🔄 Swap Toppings</h4>
+      <div id="swap-toppings-container"></div>
+      
+      <!-- Add Toppings Section -->
+      <h4>➕ Add Toppings</h4>
+      
+      <div class="extras-category">
+        <h5>🥓 Meats</h5>
+        <div class="extras-grid" id="meats-grid"></div>
+      </div>
+
+      <div class="extras-category">
+        <h5>🥬 Vegetables</h5>
+        <div class="extras-grid" id="vegetables-grid"></div>
+      </div>
+
+      <div class="extras-category">
+        <h5>🌶️ Spices & Sauces</h5>
+        <div class="extras-grid" id="spices-grid"></div>
+      </div>
+
+      <div class="extras-category">
+        <h5>🍍 Fruits & Other</h5>
+        <div class="extras-grid" id="fruits-grid"></div>
+      </div>
+
+      <div class="extras-category">
+        <h5>🧀 Cheese & Dairy</h5>
+        <div class="extras-grid" id="cheese-grid"></div>
+      </div>
+
+      <div class="extras-actions">
+        <button class="save-extras-btn" onclick="saveExtras()">✓ Save Changes</button>
+        <button class="cancel-extras-btn" onclick="cancelExtras()">✗ Cancel</button>
+      </div>
+    </div>
+
+    <div id="summary">
+      <h3>📋 Order Summary</h3>
+      <p style="font-size: 0.85em; color: #666; font-style: italic;">Click on items to customize</p>
+      <ul id="summary-list"></ul>
+      <p id="empty-message" style="color: #999; font-style: italic;">No items added yet. Click "Add to Order" on items above.</p>
+      <button id="whatsapp-btn" onclick="sendToWhatsApp()">📱 Submit Order via WhatsApp</button>
+    </div>
+
+    <script>
+      let orderItems = [];
+      let currentItemId = null;
+      let itemIdCounter = 0;
+
+      // Extras organized by category with decimal codes
+      const extrasData = {
+        meats: [
+          { code: 'E_001', name: 'Pulled Pork', price: 35 },
+          { code: 'E_002', name: 'Tender Rump Pieces', price: 40 },
+          { code: 'E_003', name: 'Chouriço', price: 30 },
+          { code: 'E_004', name: 'Chicken', price: 25 },
+          { code: 'E_005', name: 'Bacon', price: 20 },
+          { code: 'E_006', name: 'Ham', price: 20 },
+          { code: 'E_007', name: 'Salami', price: 22 },
+          { code: 'E_008', name: 'Marinated Mince', price: 25 },
+          { code: 'E_009', name: 'Anchovies', price: 22 }
+        ],
+        vegetables: [
+          { code: 'E_010', name: 'Mushrooms', price: 15 },
+          { code: 'E_011', name: 'Mixed Peppers', price: 15 },
+          { code: 'E_012', name: 'Green Pepper', price: 12 },
+          { code: 'E_013', name: 'Onions', price: 10 },
+          { code: 'E_014', name: 'Olives', price: 15 },
+          { code: 'E_015', name: 'Cherry Tomatoes', price: 15 },
+          { code: 'E_016', name: 'Artichokes', price: 18 },
+          { code: 'E_017', name: 'Rocket', price: 12 },
+          { code: 'E_018', name: 'Avocado', price: 25 },
+          { code: 'E_019', name: 'Peppadews', price: 15 }
+        ],
+        spices: [
+          { code: 'E_020', name: 'Chilli', price: 8 },
+          { code: 'E_021', name: 'Jalapeños', price: 12 },
+          { code: 'E_022', name: 'Capers', price: 12 },
+          { code: 'E_023', name: 'BBQ Sauce', price: 10 },
+          { code: 'E_024', name: 'Sweet Chilli', price: 10 },
+          { code: 'E_025', name: 'Basil Pesto', price: 15 }
+        ],
+        fruits: [
+          { code: 'E_026', name: 'Pineapple', price: 12 },
+          { code: 'E_027', name: 'Banana', price: 10 },
+          { code: 'E_028', name: 'Cranberries', price: 15 }
+        ],
+        cheese: [
+          { code: 'E_029', name: 'Extra Mozzarella', price: 18 },
+          { code: 'E_030', name: 'Feta', price: 20 },
+          { code: 'E_031', name: 'Halloumi', price: 28 },
+          { code: 'E_032', name: 'Parmesan', price: 18 }
+        ]
+      };
+
+      // Get all extras as flat array
+      function getAllExtras() {
+        return [
+          ...extrasData.meats,
+          ...extrasData.vegetables,
+          ...extrasData.spices,
+          ...extrasData.fruits,
+          ...extrasData.cheese
+        ];
+      }
+
+      // Get extra by code
+      function getExtraByCode(code) {
+        return getAllExtras().find(e => e.code === code);
+      }
+
+      function populateExtras() {
+        // Meats
+        const meatsGrid = document.getElementById('meats-grid');
+        meatsGrid.innerHTML = '';
+        extrasData.meats.forEach(extra => {
+          meatsGrid.innerHTML += createExtraCheckbox(extra);
+        });
+
+        // Vegetables
+        const vegGrid = document.getElementById('vegetables-grid');
+        vegGrid.innerHTML = '';
+        extrasData.vegetables.forEach(extra => {
+          vegGrid.innerHTML += createExtraCheckbox(extra);
+        });
+
+        // Spices
+        const spicesGrid = document.getElementById('spices-grid');
+        spicesGrid.innerHTML = '';
+        extrasData.spices.forEach(extra => {
+          spicesGrid.innerHTML += createExtraCheckbox(extra);
+        });
+
+        // Fruits
+        const fruitsGrid = document.getElementById('fruits-grid');
+        fruitsGrid.innerHTML = '';
+        extrasData.fruits.forEach(extra => {
+          fruitsGrid.innerHTML += createExtraCheckbox(extra);
+        });
+
+        // Cheese
+        const cheeseGrid = document.getElementById('cheese-grid');
+        cheeseGrid.innerHTML = '';
+        extrasData.cheese.forEach(extra => {
+          cheeseGrid.innerHTML += createExtraCheckbox(extra);
+        });
+      }
+
+      function createExtraCheckbox(extra) {
+        return `
+          <div class="extra-item">
+            <label>
+              <input type="checkbox" value="${extra.code}" data-name="${extra.name}" data-price="${extra.price}">
+              <span class="extra-code">${extra.code}</span>
+              <span class="extra-name">${extra.name}</span>
+              <span class="extra-price">+R${extra.price}</span>
+            </label>
+          </div>
+        `;
+      }
+
+      function populateSwapToppings(defaultToppings) {
+        const container = document.getElementById('swap-toppings-container');
+        
+        if (!defaultToppings || defaultToppings.length === 0) {
+          container.innerHTML = '<p style="color: #999; font-style: italic;">No default toppings to swap.</p>';
+          return;
+        }
+
+        container.innerHTML = '';
+        const allExtras = getAllExtras();
+
+        defaultToppings.forEach((toppingCode, index) => {
+          const topping = getExtraByCode(toppingCode);
+          if (!topping) return;
+
+          const swapDiv = document.createElement('div');
+          swapDiv.className = 'swap-item';
+          swapDiv.innerHTML = `
+            <span class="original-topping">${topping.name}</span>
+            <span class="swap-arrow">→</span>
+            <select data-original="${toppingCode}">
+              <option value="">Keep ${topping.name}</option>
+              ${allExtras.map(e => `<option value="${e.code}">${e.name} (+R${e.price})</option>`).join('')}
+            </select>
+          `;
+          container.appendChild(swapDiv);
+        });
+      }
+
+      function appendToSummary(itemCode, itemName, price, defaultToppings = []) {
+        // Check if item already exists with same toppings
+        const existingItem = orderItems.find(i => 
+          i.code === itemCode && 
+          i.additions.length === 0 && 
+          i.swaps.length === 0
+        );
+        
+        if (existingItem) {
+          existingItem.quantity++;
+          updateSummaryDisplay();
+          return;
+        }
+
+        const itemId = 'item-' + (itemIdCounter++);
+        const item = {
+          id: itemId,
+          code: itemCode,
+          name: itemName,
+          basePrice: price,
+          quantity: 1,
+          defaultToppings: defaultToppings || [],
+          additions: [],
+          swaps: []
+        };
+        orderItems.push(item);
+        updateSummaryDisplay();
+        
+        // Hide empty message
+        const emptyMessage = document.querySelector("#empty-message");
+        if (emptyMessage) {
+          emptyMessage.style.display = 'none';
+        }
+      }
+
+      function updateSummaryDisplay() {
+        const list = document.querySelector("#summary-list");
+        list.innerHTML = '';
+        
+        orderItems.forEach(item => {
+          const itemElement = document.createElement("li");
+          itemElement.id = item.id;
+          itemElement.onclick = () => selectItem(item.id);
+          
+          let modificationsTotal = 0;
+          let modificationsText = '';
+          
+          // Calculate additions
+          if (item.additions.length > 0) {
+            const additionsTotal = item.additions.reduce((sum, extra) => sum + extra.price, 0);
+            modificationsTotal += additionsTotal;
+          }
+          
+          // Calculate swaps (price difference)
+          if (item.swaps.length > 0) {
+            item.swaps.forEach(swap => {
+              const originalExtra = getExtraByCode(swap.from);
+              const newExtra = getExtraByCode(swap.to);
+              if (originalExtra && newExtra) {
+                modificationsTotal += (newExtra.price - originalExtra.price);
+              }
+            });
+          }
+          
+          // Build modifications text
+          if (item.additions.length > 0 || item.swaps.length > 0) {
+            let parts = [];
+            if (item.additions.length > 0) {
+              parts.push('Add: ' + item.additions.map(e => e.name).join(', '));
+            }
+            if (item.swaps.length > 0) {
+              item.swaps.forEach(swap => {
+                const from = getExtraByCode(swap.from);
+                const to = getExtraByCode(swap.to);
+                if (from && to) {
+                  parts.push(`Swap ${from.name} → ${to.name}`);
+                }
+              });
+            }
+            modificationsText = '<div class="item-extras">' + parts.join(' | ') + '</div>';
+          }
+          
+          const totalPrice = item.basePrice + modificationsTotal;
+          
+          itemElement.innerHTML = `
+            <div>
+              <span class="item-code-display">${item.code}</span> - <strong>${item.name}</strong> x${item.quantity} - R${totalPrice * item.quantity}
+              ${modificationsText}
+              <button class="remove-btn" onclick="event.stopPropagation(); removeItem('${item.id}')">Remove</button>
+            </div>
+          `;
+          list.appendChild(itemElement);
+        });
+      }
+
+      function selectItem(itemId) {
+        // Deselect all items
+        document.querySelectorAll('#summary-list li').forEach(li => {
+          li.classList.remove('selected');
+        });
+        
+        // Select clicked item
+        document.getElementById(itemId).classList.add('selected');
+        
+        currentItemId = itemId;
+        const item = orderItems.find(i => i.id === itemId);
+        
+        // Show extras section
+        document.getElementById('extras-section').classList.add('active');
+        document.getElementById('selected-item-name').textContent = item.name;
+        
+        // Populate swap toppings
+        populateSwapToppings(item.defaultToppings);
+        
+        // Populate add toppings
+        populateExtras();
+        
+        // Pre-select current swaps
+        item.swaps.forEach(swap => {
+          const select = document.querySelector(`#swap-toppings-container select[data-original="${swap.from}"]`);
+          if (select) {
+            select.value = swap.to;
+          }
+        });
+        
+        // Pre-check current additions
+        item.additions.forEach(extra => {
+          const checkbox = document.querySelector(`#extras-section input[value="${extra.code}"]`);
+          if (checkbox) {
+            checkbox.checked = true;
+          }
+        });
+        
+        // Scroll to extras
+        document.getElementById('extras-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      function saveExtras() {
+        if (!currentItemId) return;
+        
+        const item = orderItems.find(i => i.id === currentItemId);
+        
+        // Save swaps
+        item.swaps = [];
+        document.querySelectorAll('#swap-toppings-container select').forEach(select => {
+          const originalCode = select.getAttribute('data-original');
+          const newCode = select.value;
+          if (newCode && newCode !== originalCode) {
+            item.swaps.push({
+              from: originalCode,
+              to: newCode
+            });
+          }
+        });
+        
+        // Save additions
+        item.additions = [];
+        document.querySelectorAll('#extras-section input[type="checkbox"]:checked').forEach(checkbox => {
+          // Don't add if it's already a default topping or being swapped
+          const code = checkbox.value;
+          if (!item.defaultToppings.includes(code)) {
+            item.additions.push({
+              code: code,
+              name: checkbox.getAttribute('data-name'),
+              price: parseInt(checkbox.getAttribute('data-price'))
+            });
+          }
+        });
+        
+        updateSummaryDisplay();
+        cancelExtras();
+      }
+
+      function cancelExtras() {
+        document.getElementById('extras-section').classList.remove('active');
+        currentItemId = null;
+        
+        // Deselect all items
+        document.querySelectorAll('#summary-list li').forEach(li => {
+          li.classList.remove('selected');
+        });
+        
+        // Clear swap selections
+        document.querySelectorAll('#swap-toppings-container select').forEach(select => {
+          select.value = '';
+        });
+        
+        // Uncheck all additions
+        document.querySelectorAll('#extras-section input[type="checkbox"]').forEach(checkbox => {
+          checkbox.checked = false;
+        });
+      }
+
+      function removeItem(itemId) {
+        const item = orderItems.find(i => i.id === itemId);
+        if (item && item.quantity > 1) {
+          item.quantity--;
+          updateSummaryDisplay();
+        } else {
+          orderItems = orderItems.filter(i => i.id !== itemId);
+          updateSummaryDisplay();
+        }
+        
+        // Show empty message if no items left
+        const emptyMessage = document.querySelector("#empty-message");
+        if (orderItems.length === 0 && emptyMessage) {
+          emptyMessage.style.display = 'block';
+        }
+        
+        // Hide extras if removing selected item
+        if (currentItemId === itemId && orderItems.find(i => i.id === itemId) === undefined) {
+          cancelExtras();
+        }
+      }
+
+      function sendToWhatsApp() {
+        if (orderItems.length === 0) {
+          alert("Please add items to your order first!");
+          return;
+        }
+        
+        let orderText = "Update Order:\n";
+        
+        orderItems.forEach((item) => {
+          let modifications = '';
+          
+          // Build modifications string
+          let modParts = [];
+          
+          // Add swaps
+          if (item.swaps.length > 0) {
+            item.swaps.forEach(swap => {
+              modParts.push(`-${swap.from}+${swap.to}`);
+            });
+          }
+          
+          // Add additions
+          if (item.additions.length > 0) {
+            modParts.push('+' + item.additions.map(e => e.code).join('+'));
+          }
+          
+          if (modParts.length > 0) {
+            modifications = ' (' + modParts.join(', ') + ')';
+          }
+          
+          orderText += `${item.quantity}:${item.code}${modifications}\n`;
+        });
+        
+        const encodedText = encodeURIComponent(orderText);
+        const whatsappURL = "https://wa.me/27210028428?text=" + encodedText; 
+        window.open(whatsappURL, "_blank");
+      }
+
+      // Initialize on page load
+      document.addEventListener('DOMContentLoaded', function() {
+        populateExtras();
+      });
+    </script>
+  </body>
+</html>

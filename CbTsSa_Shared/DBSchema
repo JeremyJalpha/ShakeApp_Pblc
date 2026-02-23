@@ -1,0 +1,419 @@
+Table Business {
+  BusinessID bigint [not null, pk, increment]
+  RegisteredName nvarchar(25)
+  Industry tinyint
+  TradingName nvarchar(25)
+  VATNumber bigint [null]
+  StreetAddress nvarchar(70) [null]
+  PostalSameAsStreet bit [null]
+  PostalAddress nvarchar(70) [null]
+  Cellnumber int [null]
+  Email nvarchar(40) [null]
+  Website nvarchar(40) [null]
+  Facebook nvarchar(50) [null]
+  Twitter nvarchar(50) [null]
+  TradingHours nvarchar(128) [null]
+  Bank tinyint
+  BranchNumber int
+  AccountNumber bigint
+  AccountType tinyint
+  GPSLocation decimal(9, 6) [null]
+  LocationLastUpdated datetime [null]
+  AverageRating tinyint [null]
+
+  indexes {
+    (BusinessID) [pk]
+    (Industry, TradingName) [unique]
+    (RegisteredName) [unique]
+  }
+}
+
+Table AspNetUsers {
+    Id nvarchar(450) [not null, pk]
+    UserName nvarchar(256)
+    NormalizedUserName nvarchar(256) [not null]
+    Email nvarchar(256)
+    NormalizedEmail nvarchar(256)
+    EmailConfirmed bit [not null]
+    PasswordHash nvarchar(max)
+    SecurityStamp nvarchar(max)
+    ConcurrencyStamp nvarchar(max)
+    PhoneNumber nvarchar(max)
+    PhoneNumberConfirmed bit [not null]
+    TwoFactorEnabled bit [not null]
+    LockoutEnd datetimeoffset(7)
+    LockoutEnabled bit [not null]
+    AccessFailedCount int [not null]
+    
+    // Additional fields from userinfo
+    SocialMedia nvarchar(255)
+    POPIConsent bool
+    DtTmJoined timestamp
+    IsVerified bool [not null, default: false]
+    // ? Bike Specs e.g. ccs / engine size...
+
+    indexes {
+        (Id) [pk]
+        (NormalizedEmail)
+        (NormalizedUserName) [unique]
+    }
+}
+
+Table Good {
+  GoodID bigint [not null, pk, increment]
+  Barcode bigint [null]
+  ManufacturerID bigint [null]
+  Name nvarchar(40)
+  Description nvarchar(70) [null]
+  IsPrivate bit
+  Image varbinary(max) [null]
+
+  indexes {
+    (GoodID) [pk]
+  }
+}
+
+Table OfferType {
+  OfferTypeID tinyint [not null, pk, increment]
+  TypeName nvarchar(40)
+  Description nvarchar(128) [null]
+
+  indexes {
+    (OfferTypeID) [pk]
+  }
+}
+
+Table Offer {
+  OfferID bigint [not null, increment, pk]
+  OfferTypeID tinyint [not null]
+  CreatedByUserID bigint [not null]
+  BasePrice money [null]
+  OfferDtTmStart datetime
+  OfferDtTmEnd datetime
+    
+  indexes {
+    (OfferID) [pk]
+  }
+}
+
+Table GatheredBasket {
+  GatheredBasketID bigint [not null, increment]
+  BundleID bigint [not null]
+  BundleMultiplier int [not null]
+  
+  indexes {
+    (GatheredBasketID, BundleID) [pk]
+  }
+}
+
+Table EffectiveBasket {
+  EffectiveBasketID bigint [not null, increment]
+  GatheredBasketID bigint [not null]
+  EffectiveDiscount money
+  AuthorisedByUserID bigint
+  
+  indexes {
+    (EffectiveBasketID, GatheredBasketID) [pk]
+  }
+}
+
+Table AdditionalDiscount {
+  GatheredBasketID bigint [not null, pk]
+  AuthorisedByUserID nvarchar(450) [not null]
+  Discount money [not null]
+  DiscountReason text [not null]
+
+  indexes {
+    (GatheredBasketID)
+  }
+}
+
+Table Purchasable {
+  PurchasableID bigint
+  SaleableID bigint [not null]
+  OfferID bigint [not null]
+  
+  indexes {
+    (PurchasableID, SaleableID, OfferID) [pk]
+  }
+}
+
+Table Item {
+  ItemID bigint
+  PurchasableID bigint [not null]
+  SpecialID bigint [null]
+  
+  indexes {
+    (ItemID, PurchasableID, SpecialID) [unique]
+  }
+}
+
+Table Special {
+  SpecialID bigint [not null, increment, pk]
+  CreatedByUserID nvarchar(450) [not null]
+  SpecialName varchar(20)
+  SpecialDescription varchar(80)
+  SpecialDtTmStart datetime
+  SpecialDtTmEnd datetime
+  Discount money
+  IsActive bit [default: 1]
+
+  indexes {
+    (SpecialID)
+  }
+}
+
+Table Bundle {
+  BundleID bigint [not null]
+  ItemID bigint [not null]
+  
+  indexes {
+      (BundleID, ItemID) [unique]
+  }
+}
+
+Table Catalog {
+  CatalogID bigint [not null, pk, increment]
+  BusinessID bigint [not null]
+  CreatorUserID nvarchar(450) [not null]
+  Name nvarchar(70) [not null]
+  Description nvarchar(128) [null]
+  LastUpdated smalldatetime
+  
+  indexes {
+    (CatalogID) [pk]
+  }
+}
+
+Table CatalogItem {
+  CatalogID bigint [not null]
+  ItemID bigint [not null]
+  
+  indexes {
+    (CatalogID, ItemID) [pk]
+  }
+}
+
+Table Saleable {
+  SaleableID bigint [not null, pk, increment]
+  ServiceID bigint [null, unique]
+  ProductID bigint [null, unique]
+  IsService bit
+}
+
+Table Comment {
+  CommentID bigint [not null, pk, increment]
+  UserID nvarchar(450) [not null]
+  SaleableID bigint [not null]
+  Comment nvarchar(80) [null]
+  Rating tinyint [null]
+  ResponseToCommentID bigint [null]
+  
+  indexes {
+    (CommentID) [pk]
+  }
+}
+
+Table Sale {
+  SaleID bigint [not null, pk, increment]
+  UserID nvarchar(450) [not null]
+  DontPoolWithStrangers bit [not null]
+  DtTmRequestedCheckout datetime
+  ItemCount int
+  IsAmtManual bit
+  TotalAmount money
+  DtTmCompleted datetime [null]
+  
+  indexes {
+    (SaleID) [pk]
+  }
+}
+
+Table Status {
+  StatusID int [not null, pk]
+  StatusName varchar [not null]
+  StatusDescription varchar [not null]
+}
+
+Table SaleStatus {
+  SaleID bigint
+  ChangedByUserID bigint [not null]
+  DtTmStatusChanged timestamp [not null, pk]
+  NewStatusID tinyint
+  ChangeReason varchar(255)
+  
+  indexes {
+    (SaleID, ChangedByUserID, DtTmStatusChanged, NewStatusID) [pk]
+  }
+}
+
+Table SaleBasket {
+  SaleID bigint [not null]
+  EffectiveBasketID bigint [not null, unique]
+
+  indexes {
+    (SaleID, EffectiveBasketID) [pk]
+  }
+}
+
+Table Product {
+  GoodID bigint [not null, unique]
+  BusinessID bigint [not null]
+  
+  indexes {
+    (GoodID, BusinessID) [pk]
+  }
+}
+
+Table Service {
+  ServiceID bigint [not null, unique]
+  BusinessID bigint [not null]
+  Name nvarchar(40) [not null]
+  Description nvarchar(128) [null]
+  Price money [not null]
+
+  indexes {
+    (ServiceID, BusinessID, Name) [pk]
+  }
+}
+
+Table Payment {
+  PaymentID bigint [not null, pk, increment]
+  SaleID bigint
+  SenderEmail nvarchar(256)
+  CardID bigint
+  Amount money
+  CurrencyCode nvarchar(5)
+  StatusID tinyint
+  InitiationDateTime datetime
+  PayGateTransactionID int [null]
+  PayGateBankAuthID nvarchar(10) [null]
+  SuccesfulDateTime datetime [null]
+  
+  indexes {
+    (PaymentID) [pk]
+  }
+}
+
+Table Failed {
+  FailedID bigint [not null, pk, increment]
+  PaymentID bigint
+  IsRefund bit
+  FailureDateTime datetime
+  PayGateTransactionID int [null]
+  PayGateBankAuthID nvarchar(10) [null]
+  PayGateTransactionCode tinyint [null]
+  PayGateResultCode int [null]
+  PayGateValidationErrorCode int [null]
+  MopaErrorCode int
+  
+  indexes {
+    (FailedID) [pk]
+  }
+}
+
+Table Refund {
+  RefundID bigint [not null, pk, increment]
+  PaymentID bigint
+  InitiationDateTime datetime
+  PayGateTransactionID int [null]
+  PayGateBankAuthID nvarchar(10) [null]
+  SuccesfulDateTime datetime [null]
+  Reason nvarchar(50) [null]
+  
+  indexes {
+    (RefundID) [pk]
+  }
+}
+
+Table Delivery {
+  DeliveryID bigint [not null, pk, increment]
+  DtTmCreated timestamp
+  DtTmDriverAccepted timestamp
+  DriverAcceptedLocation gps
+  DtTmDriverOnScene timestamp
+  DtTmClosed timestamp
+
+  indexes {
+    (DeliveryID) [pk]
+  }
+}
+
+Table DeliveryDriverLeg {
+  DeliveryDriverLegID bigint [not null, pk, increment]
+  DeliveryLegID bigint [not null]
+  DeliveryID bigint [not null]
+  DriverID nvarchar(450) [not null]
+
+  indexes {
+    (DeliveryDriverLegID, DeliveryLegID, DriverID) [pk]
+  }
+}
+
+Table DeliveryLeg{
+  DeliveryLegID bigint
+  SaleID int [not null, pk, increment]
+  DtTmDriverOnScene timestamp
+  DtTmCollected timestamp
+  DtTmArrivedAtCust timestamp
+  DtTmOTPPassed timestamp
+  DtTmPaid timestamp
+  DtTmDisputed timestamp
+  DisputedReason varchar(255)
+  DtTmResolved timestamp
+  Resolution varchar(255)
+
+  indexes {
+    (DeliveryLegID, SaleID) [pk]
+  }
+}
+
+Table Driver {
+  UserID nvarchar(450) [not null, pk]
+  LastOnline timestamp
+  GPSLocation decimal(9, 6)
+  LocationLastUpdated timestamp
+
+  indexes {
+    (UserID) [pk]
+  }
+}
+
+// Define the references at the top level
+Ref: Sale.UserID > AspNetUsers.Id
+Ref: Driver.UserID > AspNetUsers.Id
+Ref: Comment.UserID > AspNetUsers.Id
+Ref: Catalog.CreatorUserID > AspNetUsers.Id
+Ref: Special.CreatedByUserID > AspNetUsers.Id
+Ref: AdditionalDiscount.AuthorisedByUserID > AspNetUsers.Id
+Ref: Saleable.ServiceID > Service.ServiceID
+Ref: Saleable.ProductID > Product.GoodID
+Ref: DeliveryDriverLeg.DeliveryID > Delivery.DeliveryID
+Ref: DeliveryDriverLeg.DriverID > AspNetUsers.Id
+Ref: DeliveryLeg.DeliveryLegID > DeliveryDriverLeg.DeliveryLegID
+Ref: SaleStatus.NewStatusID > Status.StatusID
+Ref: SaleStatus.SaleID > Sale.SaleID
+Ref: DeliveryLeg.SaleID > Sale.SaleID
+Ref: Product.GoodID > Good.GoodID
+Ref: Service.BusinessID > Business.BusinessID
+Ref: Offer.CreatedByUserID > AspNetUsers.Id
+Ref: Offer.OfferTypeID > OfferType.OfferTypeID
+Ref: GatheredBasket.BundleID > Bundle.BundleID
+Ref: Bundle.ItemID > Item.ItemID
+Ref: AdditionalDiscount.GatheredBasketID > GatheredBasket.GatheredBasketID
+Ref: EffectiveBasket.AuthorisedByUserID > AspNetUsers.Id
+Ref: EffectiveBasket.GatheredBasketID > GatheredBasket.GatheredBasketID
+Ref: Item.PurchasableID > Purchasable.PurchasableID
+Ref: Item.SpecialID > Special.SpecialID
+Ref: Purchasable.SaleableID > Saleable.SaleableID
+Ref: Purchasable.OfferID > Offer.OfferID
+Ref: CatalogItem.ItemID > Item.ItemID
+Ref: CatalogItem.CatalogID > Catalog.CatalogID
+Ref: Catalog.BusinessID > Business.BusinessID
+Ref: SaleBasket.EffectiveBasketID > EffectiveBasket.EffectiveBasketID
+Ref: Comment.SaleableID > Saleable.SaleableID
+Ref: SaleBasket.SaleID > Sale.SaleID
+Ref: Payment.SaleID > Sale.SaleID
+Ref: Failed.PaymentID > Payment.PaymentID
+Ref: Refund.PaymentID > Payment.PaymentID
+Ref: Product.BusinessID > Business.BusinessID

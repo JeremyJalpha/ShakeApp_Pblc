@@ -1,0 +1,30 @@
+{
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5023",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "RabbitMQ__Host": "localhost",
+        "RabbitMQ__Port": "5672",
+        "RabbitMQ__Username": "admin",
+        "RabbitMQ__Password": "admin"
+    },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:5023"
+    },
+    "https": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "RabbitMQ__Host": "localhost",
+        "RabbitMQ__Port": "5672",
+        "RabbitMQ__Username": "admin",
+        "RabbitMQ__Password": "admin"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7147;http://localhost:5023"
+    }
+  }
+}

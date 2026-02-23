@@ -1,0 +1,96 @@
+networks:
+  commandnet:
+    name: CommandNet
+    driver: bridge
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    hostname: postgres
+    ports:
+      - "5433:5432"
+    networks:
+      - commandnet
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: DevPassword123
+      POSTGRES_DB: ShakeAppDb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"     # AMQP
+      - "15672:15672"   # Management UI
+    networks:
+      - commandnet
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping && rabbitmq-diagnostics -q check_port_connectivity"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+
+  commandbot:
+    build:
+      context: .
+      dockerfile: CommandBot/Dockerfile
+    container_name: commandbot
+    networks:
+      - commandnet
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      DOTNET_ENVIRONMENT: Development
+      ASPNETCORE_URLS: "http://+:5000;https://+:5001"
+      # PostgreSQL Connection
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5433;Database=ShakeAppDb;Username=postgres;Password=DevPassword123"
+      # RabbitMQ Connection
+      RabbitMQ__Host: rabbitmq
+      RabbitMQ__Port: 5672
+      RabbitMQ__Username: admin
+      RabbitMQ__Password: admin
+      # JWT Configuration
+      JwtIssueConfig__Issuer: "CommandBot"
+      JwtIssueConfig__Key: "your-super-secret-key-min-32-chars-long"
+      JwtIssueConfig__Audiences__0: "CommandBotApi"
+      JwtIssueConfig__TokenLifetimeMinutes: 60
+      # Telegram
+      TelegramBusiness__BotToken: "TOKEN_HERE"
+      # WhatsApp Configuration
+      WhatsAppBusiness__PhoneNumberId: "YOUR_PHONE_NUMBER_ID"
+      WhatsAppBusiness__AccessToken: "YOUR_ACCESS_TOKEN"
+      # Host Business
+      HostBusiness__Cellnumber: "27646436186"
+      HostBusiness__BaseUrl: "https://localhost:5001"
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    volumes:
+      - ./logs:/app/logs
+      - ./CommandBot/My_Keys:/app/My_Keys:ro
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  rabbitmq_data:

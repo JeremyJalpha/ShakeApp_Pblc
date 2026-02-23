@@ -1,0 +1,6 @@
+@CommandBot_HostAddress = http://localhost:5023
+
+GET {{CommandBot_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

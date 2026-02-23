@@ -1,0 +1,30 @@
+services:
+  postgres:
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "DevPassword123"
+      POSTGRES_DB: "ShakeAppDb"
+
+  commandbot:
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5433;Database=ShakeAppDb;Username=postgres;Password=DevPassword123"
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:5000;https://+:5001"
+      ASPNETCORE_Kestrel__Certificates__Default__Password: "PASSWORD_HERE"
+      ASPNETCORE_Kestrel__Certificates__Default__Path: "/app/My_Keys/aspnetapp.pfx"
+      RabbitMQ__Host: "rabbitmq"
+      RabbitMQ__Port: "5672"
+      RabbitMQ__Username: "admin"
+      RabbitMQ__Password: "admin"
+      JwtIssueConfig__Issuer: "CommandBot"
+      JwtIssueConfig__Key: "your-super-secret-key-min-32-chars-long"
+      JwtIssueConfig__Audiences__0: "CommandBotApi"
+      JwtIssueConfig__TokenLifetimeMinutes: "60"
+      TelegramBusiness__BotToken: "TOKEN_HERE"
+      HostBusiness__Cellnumber: "27646436186"
+      HostBusiness__BaseUrl: "https://localhost:5001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
