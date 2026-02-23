@@ -17,7 +17,6 @@ using CommandBot.Workers;
 using CbTsSa_Shared.DBModels;
 using CbTsSa_Shared.Interfaces;
 using CbTsSa_Shared.Models;
-using CbTsSa_Shared.Services;
 using CbTsSa_Shared.CbTsSaConstants;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -203,25 +202,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 
-// ---- Image Storage Service ----
-// Configure based on environment variable IMAGE_STORAGE_TYPE (default: "S3")
-var imageStorageType = Environment.GetEnvironmentVariable("IMAGE_STORAGE_TYPE") ?? "S3";
-
-// Environment variable: IMAGE_STORAGE_TYPE
-// Default: "S3"
-// Options: "S3" or "Azure"
-if (imageStorageType.Equals("Azure", StringComparison.OrdinalIgnoreCase))
-{
-    bootstrapLogger.LogInformation("Image Storage: Using Azure Blob Storage");
-    builder.Services.AddScoped<IImageStorageService, AzureBlobImageStorageService>();
-}
-else
-{
-    bootstrapLogger.LogInformation("Image Storage: Using AWS S3");
-    // Register S3 service with dependency injection
-    builder.Services.AddScoped<IImageStorageService, S3ImageStorageService>();
-}
-
 // Domain services
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ConversationContextFactory>();
@@ -231,7 +211,6 @@ builder.Services.AddScoped<ICommandRunner, CommandRunner>();
 // ---- Form Handler Registry ----
 // Register all form handlers as scoped
 builder.Services.AddScoped<CommandBot.Commands.FormHandlers.UserSignupFormHandler>();
-builder.Services.AddScoped<CommandBot.Commands.FormHandlers.FoodPoisoningFormHandler>();
 
 // Register the registry as singleton and configure it via a factory
 builder.Services.AddSingleton<CommandBot.Commands.FormHandlerRegistry>(sp =>
@@ -241,10 +220,8 @@ builder.Services.AddSingleton<CommandBot.Commands.FormHandlerRegistry>(sp =>
     // Create a temporary scope to resolve scoped handlers for registration
     using var scope = sp.CreateScope();
     var userSignupHandler = scope.ServiceProvider.GetRequiredService<CommandBot.Commands.FormHandlers.UserSignupFormHandler>();
-    var foodPoisoningHandler = scope.ServiceProvider.GetRequiredService<CommandBot.Commands.FormHandlers.FoodPoisoningFormHandler>();
 
     registry.Register(userSignupHandler);
-    registry.Register(foodPoisoningHandler);
 
     bootstrapLogger.LogInformation("FormHandlerRegistry configured with {Count} handlers: {Types}",
         2,
@@ -300,7 +277,6 @@ builder.Services.AddHostedService<CommandWorker>();
 builder.Services.AddHostedService<TelegramConsumerService>();
 builder.Services.AddHostedService<WhatsAppConsumerService>();
 builder.Services.AddHostedService<BroadcastCleanupWorker>();
-builder.Services.AddHostedService<ImageProcessingWorker>();
 builder.Services.AddSingleton<IBackgroundTaskRunner, DefaultBackgroundTaskRunner>();
 
 // ---- BusinessContext scoped binding ----
